@@ -10,11 +10,16 @@
 <body>
 <main>
 <p class="crumb"><a href="/">My Quest Board</a></p>
-<!-- Where the confirmation email's link lands. If the link failed (for example
-     it expired), the sign-in service adds error details to the address. -->
+<!-- Where the confirmation email's link lands. Sign-ups from the phone app add
+     ?app=1, and the sign-in service adds a one-time ?code=...: this page opens
+     the app with that code, which signs the player in (it only works on the
+     phone that signed up). If the link failed (for example it expired), the
+     sign-in service adds error details instead. -->
 <div id="ok">
   <h1>Your email is confirmed</h1>
-  <p class="lead">Go back to My Quest Board and sign in with your email and password.</p>
+  <p class="lead" id="next">Go back to My Quest Board and sign in with your email and password.</p>
+  <p id="open" hidden><a class="button" id="open-link" href="#">Open My Quest Board</a></p>
+  <p class="muted" id="open-help" hidden>If the game doesn't open, open it yourself and sign in with your email and password.</p>
 </div>
 <div id="failed" hidden>
   <h1>That link didn't work</h1>
@@ -34,6 +39,13 @@
     if (params.get("error_code") === "otp_expired") {
       document.getElementById("reason").textContent = "The link has expired.";
     }
+  } else if (params.get("app") === "1" && params.get("code")) {
+    var appUrl = "questboard://auth-callback?code=" + encodeURIComponent(params.get("code"));
+    document.getElementById("next").textContent = "Opening My Quest Board…";
+    document.getElementById("open-link").href = appUrl;
+    document.getElementById("open").hidden = false;
+    document.getElementById("open-help").hidden = false;
+    location.href = appUrl;
   }
 </script>
 </body>
