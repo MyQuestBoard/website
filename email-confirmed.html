@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Email Confirmed · My Quest Board</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<p class="crumb"><a href="/">My Quest Board</a></p>
+<!-- Where the confirmation email's link lands. If the link failed (for example
+     it expired), the sign-in service adds error details to the address. -->
+<div id="ok">
+  <h1>Your email is confirmed</h1>
+  <p class="lead">Go back to My Quest Board and sign in with your email and password.</p>
+</div>
+<div id="failed" hidden>
+  <h1>That link didn't work</h1>
+  <p class="lead" id="reason">The link may have expired or already been used.</p>
+  <p>If you've already confirmed your email, just sign in. Otherwise, sign up again in the game to get a new link.</p>
+</div>
+<footer>
+  <a href="privacy.html">Privacy Policy</a> ·
+  <a href="mailto:adamayers@myquestboard.com">Contact</a>
+</footer>
+</main>
+<script>
+  var params = new URLSearchParams(location.hash.slice(1) + "&" + location.search.slice(1));
+  if (params.get("error") || params.get("error_code")) {
+    document.getElementById("ok").hidden = true;
+    document.getElementById("failed").hidden = false;
+    if (params.get("error_code") === "otp_expired") {
+      document.getElementById("reason").textContent = "The link has expired.";
+    }
+  }
+</script>
+</body>
+</html>
