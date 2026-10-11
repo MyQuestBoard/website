@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.myquestboard.game",
+      "sha256_cert_fingerprints": [
+        "0C:8A:87:11:F6:2C:E2:11:3A:13:8F:69:DE:A8:BB:35:14:5C:D7:DB:08:79:DF:D5:E5:E8:71:C3:4D:57:CD:65"
+      ]
+    }
+  }
+]

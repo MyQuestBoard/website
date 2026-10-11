@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Confirm Email · My Quest Board</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+<p class="crumb"><a href="/">My Quest Board</a></p>
+<!-- The confirmation email links here: /auth/confirm?token_hash=...&type=...&redirect_to=...
+     On Android phones with the game installed, the game opens instead (App
+     Links). Anywhere else this page confirms the email when the button is
+     tapped. (A button, not automatic, so email link scanners can't use up the
+     one-time link.) Sign-ups from the web version of the game are sent back
+     to it, which confirms and signs in there. -->
+<div id="ask">
+  <h1>Confirm your email</h1>
+  <p class="lead">Tap the button to finish creating your My Quest Board account.</p>
+  <p><button class="button" id="confirm" type="button">Confirm my email</button></p>
+</div>
+<div id="done" hidden>
+  <h1>Your email is confirmed</h1>
+  <p class="lead">Go back to My Quest Board and sign in with your email and password.</p>
+</div>
+<div id="failed" hidden>
+  <h1>That link didn't work</h1>
+  <p class="lead">It may have expired or already been used.</p>
+  <p>If you've already confirmed your email, just sign in. Otherwise, sign up again in the game to get a new link.</p>
+</div>
+<footer>
+  <a href="/privacy.html">Privacy Policy</a> ·
+  <a href="mailto:adamayers@myquestboard.com">Contact</a>
+</footer>
+</main>
+<script>
+  // The game's publishable key: public by design (it ships inside the app and
+  // only allows what a signed-out visitor may do).
+  var SUPABASE_URL = "https://brbzadylyhjljypljoqk.supabase.co";
+  var PUBLISHABLE_KEY = "sb_publishable_y8azf7N4kXH4Y6n9hE78RA_QvVXcRm6";
+
+  var params = new URLSearchParams(location.search);
+  var tokenHash = params.get("token_hash");
+  var type = params.get("type") || "signup";
+  var redirectTo = params.get("redirect_to") || "";
+
+  function show(id) {
+    ["ask", "done", "failed"].forEach(function (x) { document.getElementById(x).hidden = x !== id; });
+  }
+
+  if (!tokenHash) show("failed");
+
+  // Sign-ups from the web version of the game (any address that isn't this
+  // website): send the token back to the game, which signs in there.
+  var WEBSITE = ["myquestboard.com", "www.myquestboard.com", location.hostname];
+  var gameOrigin = null;
+  try {
+    var target = new URL(redirectTo);
+    if (WEBSITE.indexOf(target.hostname) === -1) gameOrigin = target.origin;
+  } catch (e) {}
+
+  document.getElementById("confirm").addEventListener("click", function () {
+    if (gameOrigin) {
+      location.href = gameOrigin + "/auth/confirm?token_hash=" + encodeURIComponent(tokenHash) + "&type=" + encodeURIComponent(type);
+      return;
+    }
+    this.disabled = true;
+    fetch(SUPABASE_URL + "/auth/v1/verify", {
+      method: "POST",
+      headers: { apikey: PUBLISHABLE_KEY, "content-type": "application/json" },
+      body: JSON.stringify({ type: type, token_hash: tokenHash })
+    }).then(function (res) { show(res.ok ? "done" : "failed"); }, function () { show("failed"); });
+  });
+</script>
+</body>
+</html>
