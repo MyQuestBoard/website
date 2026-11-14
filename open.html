@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Open QuestBoard</title>
+<title>Open My Quest Board</title>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <main>
-<p class="brand"><a href="/">QuestBoard</a></p>
+<p class="brand"><a href="/">My Quest Board</a></p>
 <!--
-  Where QuestBoard's email links land (sign-up confirmation and password
+  Where My Quest Board's email links land (sign-up confirmation and password
   reset). Supabase has already checked the link and adds a one-time ?code=...
   This page hands that code to the app (myquestboard://auth/confirm or
   myquestboard://auth/reset), which finishes signing in. The code only works
@@ -19,14 +19,14 @@
   to do instead. ?to=confirm or ?to=reset says which email it was.
 -->
 <div id="phone" hidden>
-  <h1 id="phone-title">Opening QuestBoard…</h1>
+  <h1 id="phone-title">Opening My Quest Board…</h1>
   <p class="lead" id="phone-text">If it doesn’t open by itself, tap the button.</p>
-  <p><a class="button" id="open" href="#">Open QuestBoard</a></p>
+  <p><a class="button" id="open" href="#">Open My Quest Board</a></p>
   <p class="muted">Don’t have the app yet? It’s coming soon to iPhone and Android.</p>
 </div>
 <div id="computer" hidden>
   <h1 id="computer-title">Your email is confirmed</h1>
-  <p class="lead" id="computer-text">Open QuestBoard on your phone and sign in with your email and password.</p>
+  <p class="lead" id="computer-text">Open My Quest Board on your phone and sign in with your email and password.</p>
 </div>
 <div id="failed" hidden>
   <h1>That link didn’t work</h1>
@@ -58,12 +58,12 @@
   } else if (onPhone && code) {
     var appUrl = "myquestboard://auth/" + to + "?code=" + encodeURIComponent(code);
     document.getElementById("open").href = appUrl;
-    if (to === "reset") text("phone-title", "Opening QuestBoard to reset your password…");
+    if (to === "reset") text("phone-title", "Opening My Quest Board to reset your password…");
     show("phone");
     location.href = appUrl;
   } else if (to === "reset") {
     text("computer-title", "Open this on your phone");
-    text("computer-text", "Password resets finish in the QuestBoard app. Open the reset email on the phone you asked for it on, and tap the button again.");
+    text("computer-text", "Password resets finish in the app. Open the reset email on the phone you asked for it on, and tap the button again.");
     show("computer");
   } else {
     // Supabase confirms the email before sending people here, so it's done.
