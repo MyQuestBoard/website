@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Open QuestBoard</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+<p class="brand"><a href="/">QuestBoard</a></p>
+<!--
+  Where QuestBoard's email links land (sign-up confirmation and password
+  reset). Supabase has already checked the link and adds a one-time ?code=...
+  This page hands that code to the app (myquestboard://auth/confirm or
+  myquestboard://auth/reset), which finishes signing in. The code only works
+  on the phone that asked for the email, so on a computer this page says what
+  to do instead. ?to=confirm or ?to=reset says which email it was.
+-->
+<div id="phone" hidden>
+  <h1 id="phone-title">Opening QuestBoard…</h1>
+  <p class="lead" id="phone-text">If it doesn’t open by itself, tap the button.</p>
+  <p><a class="button" id="open" href="#">Open QuestBoard</a></p>
+  <p class="muted">Don’t have the app yet? It’s coming soon to iPhone and Android.</p>
+</div>
+<div id="computer" hidden>
+  <h1 id="computer-title">Your email is confirmed</h1>
+  <p class="lead" id="computer-text">Open QuestBoard on your phone and sign in with your email and password.</p>
+</div>
+<div id="failed" hidden>
+  <h1>That link didn’t work</h1>
+  <p class="lead" id="reason">It may have expired or already been used.</p>
+  <p id="failed-next">Ask for a new one in the app.</p>
+</div>
+<footer>
+  <a href="/terms.html">Terms</a> ·
+  <a href="/privacy.html">Privacy</a> ·
+  <a href="mailto:adamayers@myquestboard.com">Contact</a>
+</footer>
+</main>
+<script>
+  var params = new URLSearchParams(location.search.slice(1) + "&" + location.hash.slice(1));
+  var to = params.get("to") === "reset" ? "reset" : "confirm";
+  var code = params.get("code");
+  var onPhone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  function show(id) {
+    ["phone", "computer", "failed"].forEach(function (x) { document.getElementById(x).hidden = x !== id; });
+  }
+  function text(id, value) { document.getElementById(id).textContent = value; }
+
+  if (params.get("error") || params.get("error_code")) {
+    if (params.get("error_code") === "otp_expired") text("reason", "The link has expired or was already used.");
+    text("failed-next", to === "reset"
+      ? "Ask for a new reset link in the app: Forgot password? on the sign-in screen."
+      : "If you’ve already confirmed your email, just sign in. Otherwise, sign in to get a new confirmation link.");
+    show("failed");
+  } else if (onPhone && code) {
+    var appUrl = "myquestboard://auth/" + to + "?code=" + encodeURIComponent(code);
+    document.getElementById("open").href = appUrl;
+    if (to === "reset") text("phone-title", "Opening QuestBoard to reset your password…");
+    show("phone");
+    location.href = appUrl;
+  } else if (to === "reset") {
+    text("computer-title", "Open this on your phone");
+    text("computer-text", "Password resets finish in the QuestBoard app. Open the reset email on the phone you asked for it on, and tap the button again.");
+    show("computer");
+  } else {
+    // Supabase confirms the email before sending people here, so it's done.
+    show("computer");
+  }
+</script>
+</body>
+</html>
